@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	   	http://www.springframework.org/schema/mvc
+	   	http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+	   	http://www.springframework.org/schema/context
+	   	http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+    <!-- declaring base package -->
+    <context:component-scan base-package="com"/>
+
+    <!-- enable autowire -->
+    <context:annotation-config ></context:annotation-config>
+
+    <!-- declares support for general annotations such as @Required, @Autowired, @PostConstruct, and so on. -->
+    <!-- <mvc:annotation-driven /> -->
+    <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager">
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>text/plain;charset=utf-8</value>
+                        <value>text/html;charset=utf-8</value>
+                        <value>text/json;charset=utf-8</value>
+                        <value>application/json;charset=utf-8</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!-- Total customization - see below for explanation. -->
+    <bean id="contentNegotiationManager"
+          class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+        <property name="favorPathExtension" value="false" />
+        <property name="favorParameter" value="true" />
+        <property name="parameterName" value="mediaType" />
+        <property name="ignoreAcceptHeader" value="true"/>
+        <property name="useJaf" value="false"/>
+        <property name="defaultContentType" value="application/json" />
+
+        <property name="mediaTypes">
+            <map>
+                <entry key="json" value="application/json" />
+                <entry key="xml" value="application/xml" />
+            </map>
+        </property>
+    </bean>
+    <!-- static resource visit -->
+    <!--<mvc:resources location="/js/" mapping="/js/**" />
+    <mvc:resources location="/img/" mapping="/img/**" />
+    <mvc:resources location="/css/" mapping="/css/**" />
+    <mvc:resources location="/templates/" mapping="/template/**" />-->
+    <mvc:resources mapping="/assets/**" location="/assets/"/>
+
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/pages/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="utf-8" />
+        <property name="maxUploadSize" value="10485760000" />
+        <property name="maxInMemorySize" value="40960"/>
+    </bean>
+
+</beans>
